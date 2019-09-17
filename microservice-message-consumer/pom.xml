@@ -38,10 +38,10 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     
-    <dependency>
-	    <groupId>com.nudt</groupId>
-	    <artifactId>microservice-message-transaction</artifactId>
-	    <version>1.0-SNAPSHOT</version>
-    </dependency>
+    <!--<dependency>-->
+	    <!--<groupId>com.nudt</groupId>-->
+	    <!--<artifactId>microservice-message-transaction</artifactId>-->
+	    <!--<version>1.0-SNAPSHOT</version>-->
+    <!--</dependency>-->
   </dependencies>
 </project>

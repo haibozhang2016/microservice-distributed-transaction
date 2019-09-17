@@ -1,6 +1,6 @@
-package com.coolmq.amqp.listener;
+package com.itmuch.cloud.study.consumer.listener;
 
-import com.coolmq.amqp.util.MQConstants;
+import com.itmuch.cloud.study.consumer.utils.MQConstants;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,21 +1,18 @@
-package demo;
+package com.itmuch.cloud.study.consumer.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import com.itmuch.cloud.study.consumer.listener.BizMessageListener;
+import com.itmuch.cloud.study.consumer.utils.MQConstants;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.coolmq.amqp.util.MQConstants;
+@Configuration
+public class QueueConfig {
 
-public class BizQueueConfig {
-	
 	/**
      * 1 首先声明要使用哪个交换机
      */
@@ -25,7 +22,7 @@ public class BizQueueConfig {
     }
 
 	 /**
-     * 2 queue的名称bizQueue，以及一些参数配置
+     * 2 queue的一些参数配置
      */
    @Bean
    public Queue bizQueue() {
@@ -37,7 +34,7 @@ public class BizQueueConfig {
 	   arguments.put("x-message-ttl", 60000);
 	   /**消息队列的最大大长度*/
 	   arguments.put("x-max-length", 300);
-	   return new Queue("biz_queue_name",true,false,false,arguments);
+	   return new Queue(MQConstants.BUSINESS_QUEUE,true,false,false,arguments);
    }
    
    /**
@@ -46,17 +43,15 @@ public class BizQueueConfig {
     */
    @Bean
    public Binding bizBinding() {
-       return BindingBuilder.bind(bizQueue()).to(businessExchange())
-               .with("biz_key_name");
+       return BindingBuilder.bind(bizQueue()).to(businessExchange()).with(MQConstants.BUSINESS_KEY);
    }
     
    /**
     * 4 最后声明一个listener，用来监听
     */
    @Bean
-   public SimpleMessageListenerContainer bizListenerContainer(ConnectionFactory connectionFactory, 
+   public SimpleMessageListenerContainer bizListenerContainer(ConnectionFactory connectionFactory,
    		BizMessageListener bizMessageListener) {
-   	
        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
        container.setQueues(bizQueue());
        container.setExposeListenerChannel(true);

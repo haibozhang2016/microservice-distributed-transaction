@@ -1,7 +1,8 @@
-package com.coolmq.amqp.sender;
+package com.itmuch.cloud.study.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
@@ -10,11 +11,6 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import com.coolmq.amqp.util.MQConstants;
-import com.coolmq.amqp.util.RabbitMetaMessage;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
@@ -26,7 +22,7 @@ import java.util.UUID;
  * @version V0.1
  */
 
-public class RabbitSender {
+public class RabbitSender{
 
     /**
      * 发送MQ消息
@@ -40,14 +36,11 @@ public class RabbitSender {
         
         // 放缓存
         redisTemplate.opsForHash().put(MQConstants.MQ_PRODUCER_RETRY_KEY, msgId, rabbitMetaMessage);
-        MessagePostProcessor messagePostProcessor = new MessagePostProcessor() {
-            @Override
-            public Message postProcessMessage(Message message) throws AmqpException {
+        MessagePostProcessor messagePostProcessor = (message) -> {
                 message.getMessageProperties().setMessageId(msgId);
-                // 设置消息持久化
+                // 设置消息持久化, 防止丢失
                 message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
                 return message;
-            }
         };
 
         ObjectMapper mapper = new ObjectMapper();
@@ -55,8 +48,8 @@ public class RabbitSender {
 
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setContentType("application/json");
-        Message message = new Message(json.getBytes(),messageProperties);
-        
+        Message message = new Message(json.getBytes(), messageProperties);
+
         try {
             rabbitTemplate.convertAndSend(rabbitMetaMessage.getExchange(), rabbitMetaMessage.getRoutingKey(),
             		message, messagePostProcessor, new CorrelationData(msgId));
@@ -68,4 +61,5 @@ public class RabbitSender {
             throw new RuntimeException("发送RabbitMQ消息失败！", e);
         }
     }
+
 }

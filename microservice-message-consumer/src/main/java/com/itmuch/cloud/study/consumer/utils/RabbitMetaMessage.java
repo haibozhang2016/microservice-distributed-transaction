@@ -1,4 +1,4 @@
-package com.coolmq.amqp.util;
+package com.itmuch.cloud.study.consumer.utils;
 
 /**
  * <p><b>Description:</b> 常量类 <p>

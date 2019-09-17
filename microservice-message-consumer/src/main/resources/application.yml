@@ -9,5 +9,8 @@ eureka:
       defaultZone: http://discovery:8761/eureka/
   instance:
     preferIpAddress: true
-    
+
+logging:
+  level: debug
+
 ### 参考：https://spring.io/guides/gs/client-side-load-balancing/
